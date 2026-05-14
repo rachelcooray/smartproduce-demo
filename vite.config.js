@@ -5,4 +5,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/smartproduce-demo/',
+  build: {
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: { tfjs: ['@tensorflow/tfjs'] },
+      },
+    },
+  },
 })
