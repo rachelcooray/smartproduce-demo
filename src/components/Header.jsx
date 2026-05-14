@@ -7,7 +7,7 @@ export default function Header() {
         </div>
         <div>
           <div className="font-bold text-base leading-tight">SmartProduce AI</div>
-          <div className="text-green-200 text-xs leading-tight">Keells Super</div>
+          <div className="text-green-200 text-xs leading-tight">Fresh Produce</div>
         </div>
       </div>
       <span className="bg-white/20 text-white text-xs font-semibold px-2 py-0.5 rounded-full border border-white/30">
