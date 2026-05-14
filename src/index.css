@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .scan-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, transparent, #1d6f42, #1d6f42, transparent);
+    animation: scan 2s linear infinite;
+    box-shadow: 0 0 8px rgba(29, 111, 66, 0.8);
+  }
+}
+
+@keyframes scan {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+
+@keyframes pulse_ring {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(29, 111, 66, 0.4); }
+  50% { opacity: 0.85; box-shadow: 0 0 0 12px rgba(29, 111, 66, 0); }
+}
+
+.camera-ring {
+  animation: pulse_ring 1.8s ease-in-out infinite;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeInUp 0.35s ease-out forwards;
+}
