@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { getVarieties } from '../data/produce'
 
-export default function ResultScreen({ result, onConfirm, onRetry }) {
+export default function ResultScreen({ result, onConfirm, onRetry, onManualPick }) {
   const varieties = getVarieties(result.category)
   const confidence = Math.round((result.confidence ?? 0) * 100)
   const categoryLabel = result.category
@@ -18,17 +18,23 @@ export default function ResultScreen({ result, onConfirm, onRetry }) {
   if (!result.identified) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8 fade-in bg-white">
-        <div className="text-6xl">🤔</div>
-        <p className="text-gray-800 font-bold text-xl">No produce detected</p>
+        <div className="text-5xl">📷</div>
+        <p className="text-gray-800 font-bold text-xl text-center">Couldn't identify produce</p>
         <p className="text-gray-400 text-sm text-center">
-          {result.notes || 'Make sure the produce is clearly visible.'}
+          Select your item manually or try again with a clearer image.
         </p>
         <button
-          onClick={onRetry}
-          className="mt-2 bg-keells-green text-white font-semibold rounded-2xl py-3 px-10
-                     active:scale-95 transition-transform shadow"
+          onClick={onManualPick}
+          className="w-full max-w-xs bg-keells-green text-white font-semibold rounded-2xl py-4
+                     active:scale-95 transition-transform shadow-md"
         >
-          Try Again
+          Select from list
+        </button>
+        <button
+          onClick={onRetry}
+          className="text-gray-400 text-sm font-medium hover:text-keells-green transition-colors"
+        >
+          Retake photo
         </button>
       </div>
     )

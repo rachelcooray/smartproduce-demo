@@ -3,16 +3,18 @@ import Header from './components/Header'
 import ReadyScreen from './screens/ReadyScreen'
 import ScanningScreen from './screens/ScanningScreen'
 import ResultScreen from './screens/ResultScreen'
+import ManualPickScreen from './screens/ManualPickScreen'
 import LabelScreen from './screens/LabelScreen'
 import { identifyProduce } from './api/identify'
 
-const SCREENS = { READY: 'ready', SCANNING: 'scanning', RESULT: 'result', LABEL: 'label' }
+const SCREENS = { READY: 'ready', SCANNING: 'scanning', RESULT: 'result', MANUAL: 'manual', LABEL: 'label' }
 
 const STEPS = [
-  { key: SCREENS.READY,    label: 'Camera'  },
-  { key: SCREENS.SCANNING, label: 'Scan'    },
-  { key: SCREENS.RESULT,   label: 'Result'  },
-  { key: SCREENS.LABEL,    label: 'Label'   },
+  { key: SCREENS.READY,    label: 'Camera' },
+  { key: SCREENS.SCANNING, label: 'Scan'   },
+  { key: SCREENS.RESULT,   label: 'Result' },
+  { key: SCREENS.MANUAL,   label: 'Result' }, // same visual step as RESULT
+  { key: SCREENS.LABEL,    label: 'Label'  },
 ]
 const STEP_KEYS = STEPS.map(s => s.key)
 
@@ -38,6 +40,10 @@ export default function App() {
   const handleConfirm = useCallback((produce) => {
     setConfirmedProduce(produce)
     setScreen(SCREENS.LABEL)
+  }, [])
+
+  const handleManualPick = useCallback(() => {
+    setScreen(SCREENS.MANUAL)
   }, [])
 
   const handleRetry = useCallback(() => {
@@ -87,6 +93,13 @@ export default function App() {
           <ResultScreen
             result={identifyResult}
             onConfirm={handleConfirm}
+            onRetry={handleRetry}
+            onManualPick={handleManualPick}
+          />
+        )}
+        {screen === SCREENS.MANUAL && (
+          <ManualPickScreen
+            onSelect={handleConfirm}
             onRetry={handleRetry}
           />
         )}

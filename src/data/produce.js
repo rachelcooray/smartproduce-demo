@@ -31,6 +31,16 @@ export const PLU_MAP = {
   default: 3099,
 }
 
+// Full alphabetical list for the manual fallback picker
+export const ALL_PRODUCE = [
+  'Apple', 'Avocado', 'Banana', 'Beetroot', 'Brinjal', 'Broccoli',
+  'Cabbage', 'Carrot', 'Cauliflower', 'Coconut', 'Corn', 'Cucumber',
+  'Drumstick', 'Garlic', 'Ginger', 'Gotukola', 'Grape', 'Green Chilli',
+  'Jackfruit', 'Karapincha', 'Leeks', 'Lemon', 'Lime', 'Mango',
+  'Mukunuwenna', 'Okra', 'Onion', 'Papaya', 'Pepper', 'Pineapple',
+  'Pomegranate', 'Potato', 'Rambutan', 'Tomato', 'Watermelon',
+]
+
 export function getPricePerKg(category) {
   return PRICE_PER_KG[category?.toLowerCase()] ?? PRICE_PER_KG.default
 }
