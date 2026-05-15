@@ -1,69 +1,50 @@
-# SmartProduce Demo
+# SmartProduce AI — Demo App
 
-A standalone produce recognition demo app built for the **Keells Supermarket** pitch.
-Simulates the full self-service scale experience using the device camera and Claude AI for produce identification.
+A self-service produce identification demo for **Keells Supermarket** built for the SmartProduce AI pitch. Point the camera at any fruit or vegetable — the app identifies it, asks for the variety if needed, and prints a simulated price label. Zero taps required for most items.
 
-## What This App Does
+## How it works
 
-1. **Camera capture** — Opens the device camera (rear-facing on mobile)
-2. **AI identification** — Sends the captured frame to Claude Vision (`claude-sonnet-4-20250514`) which returns the produce category and confidence score
-3. **Variety selection** — For produce with multiple varieties (banana, mango, apple, etc.) the shopper selects the specific variety
-4. **Weight input** — A slider simulates placing produce on the scale (50–2000g); the price is calculated automatically
-5. **Label preview** — Shows a simulated thermal label with PLU code, weight, price, and barcode — what would print at a real scale terminal
+| Screen | What happens |
+|--------|-------------|
+| **Camera** | Live feed auto-captures after a 3-second countdown |
+| **Scanning** | Frozen frame + sweep animation while Claude Vision identifies the produce |
+| **Result** | Shows item name + confidence. If the item has varieties, a tap grid appears. Otherwise auto-advances in 1.5s |
+| **Label** | Simulated thermal label with weight, price, PLU and barcode |
 
-## How to Run Locally
+## Identification
+
+Uses **Claude Vision** (`claude-sonnet-4-20250514`) to identify produce from the captured frame. The model returns category, confidence score, and whether the item has variety options at Keells.
+
+### Swapping in the production model
+
+In production, `src/api/identify.js` → `identifyProduce()` is replaced with a call to the on-device **EfficientNet / MobileNetV3** model trained on Keells produce. The function signature stays the same — it receives a base64 JPEG and returns `{ category, confidence, has_varieties }`. One function swap, nothing else changes.
+
+## Run locally
 
 ```bash
-# 1. Clone the repo
-git clone <your-repo-url>
+git clone https://github.com/rachelcooray/smartproduce-demo.git
 cd smartproduce-demo
-
-# 2. Install dependencies
 npm install
-
-# 3. Add your API key
 cp .env.example .env
-# Edit .env and paste your Anthropic API key
-
-# 4. Start the dev server
+# Paste your Anthropic API key into .env
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
-For the camera to work on mobile, either use `localhost` or serve over HTTPS (`npm run dev -- --host` then open via your local IP on the same network).
+Open `http://localhost:5173`. For the camera on mobile: `npm run dev -- --host` then open your local IP on the same WiFi.
 
-## Getting an Anthropic API Key
+## API key
 
-1. Go to [console.anthropic.com](https://console.anthropic.com)
-2. Sign up / log in
-3. Navigate to **API Keys** → **Create Key**
-4. Copy the key and paste it as `VITE_ANTHROPIC_API_KEY` in your `.env` file
+Get a free key at [console.anthropic.com](https://console.anthropic.com) → API Keys → Create Key.
 
-> **Note:** The API key is used directly from the browser in this demo. In a production deployment, route requests through a backend to keep the key secret.
-
-## Building for Production
-
-```bash
-npm run build
-# Output is in the dist/ folder — deploy to any static host (Netlify, Vercel, etc.)
+Set it in `.env`:
+```
+VITE_ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-## Production Architecture Note
+> The key is used directly from the browser in this demo. In production, proxy through a backend.
 
-This demo is intentionally simplified for pitch purposes:
+## Produce with variety selection
 
-| Demo | Production |
-|------|-----------|
-| Device camera via `getUserMedia` | Fixed USB camera mounted above the scale |
-| Claude Vision API (`claude-sonnet-4-20250514`) | On-device YOLOv8 model trained on Sri Lankan produce |
-| Slider weight input | Hardware load cell / scale serial interface |
-| Simulated label preview | Thermal label printer via serial/USB |
-| API key in browser env | Backend proxy with auth |
+Apple, Banana, Mango, Mandarin, Melon, Orange, Pear, Grape, Tomato, Capsicum, Bell Pepper, Carrot, Potato, Onion, Brinjal, Cabbage, Watermelon, Cucumber, Pumpkin
 
-The trained YOLOv8 model eliminates the API cost and latency for production and works fully offline on the scale hardware.
-
-## Supported Produce
-
-Variety selection is available for: Banana, Mango, Tomato, Apple, Potato, Onion, Cabbage, Watermelon, Coconut, Jackfruit, Brinjal.
-
-All other produce skips variety selection and goes straight to weight input.
+All other items skip the variety screen and auto-advance to the label.

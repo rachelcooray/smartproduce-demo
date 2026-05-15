@@ -3,66 +3,57 @@ import Header from './components/Header'
 import ReadyScreen from './screens/ReadyScreen'
 import ScanningScreen from './screens/ScanningScreen'
 import ResultScreen from './screens/ResultScreen'
-import ManualPickScreen from './screens/ManualPickScreen'
 import LabelScreen from './screens/LabelScreen'
 import { identifyProduce } from './api/identify'
 
-const SCREENS = { READY: 'ready', SCANNING: 'scanning', RESULT: 'result', MANUAL: 'manual', LABEL: 'label' }
-
-const STEPS = [
-  { key: SCREENS.READY,    label: 'Camera' },
-  { key: SCREENS.SCANNING, label: 'Scan'   },
-  { key: SCREENS.RESULT,   label: 'Result' },
-  { key: SCREENS.MANUAL,   label: 'Result' }, // same visual step as RESULT
-  { key: SCREENS.LABEL,    label: 'Label'  },
+const SCREENS = { READY: 'ready', SCANNING: 'scanning', RESULT: 'result', LABEL: 'label' }
+const STEPS   = [
+  { key: SCREENS.READY,    label: 'Camera'  },
+  { key: SCREENS.SCANNING, label: 'Scan'    },
+  { key: SCREENS.RESULT,   label: 'Result'  },
+  { key: SCREENS.LABEL,    label: 'Label'   },
 ]
-const STEP_KEYS = STEPS.map(s => s.key)
 
 export default function App() {
-  const [screen, setScreen]               = useState(SCREENS.READY)
-  const [capturedImage, setCapturedImage] = useState(null)
-  const [identifyResult, setIdentifyResult] = useState(null)
-  const [confirmedProduce, setConfirmedProduce] = useState(null)
+  const [screen,   setScreen]   = useState(SCREENS.READY)
+  const [captured, setCaptured] = useState(null)
+  const [result,   setResult]   = useState(null)
+  const [produce,  setProduce]  = useState(null)
 
   const handleCapture = useCallback(async ({ dataUrl, base64 }) => {
-    setCapturedImage(dataUrl)
+    setCaptured(dataUrl)
     setScreen(SCREENS.SCANNING)
     try {
-      const result = await identifyProduce(base64)
-      setIdentifyResult(result)
+      const res = await identifyProduce(base64)
+      setResult(res)
     } catch (err) {
-      setIdentifyResult({ identified: false, category: null, confidence: 0, notes: err.message })
+      setResult({ category: null, confidence: 0, has_varieties: false, error: err.message })
     }
     setScreen(SCREENS.RESULT)
   }, [])
 
-  // Called by ResultScreen — either immediately (variety tap) or after 1.5s auto (no variety)
-  const handleConfirm = useCallback((produce) => {
-    setConfirmedProduce(produce)
+  const handleConfirm = useCallback((p) => {
+    setProduce(p)
     setScreen(SCREENS.LABEL)
   }, [])
 
-  const handleManualPick = useCallback(() => {
-    setScreen(SCREENS.MANUAL)
-  }, [])
-
   const handleRetry = useCallback(() => {
-    setCapturedImage(null)
-    setIdentifyResult(null)
+    setCaptured(null)
+    setResult(null)
     setScreen(SCREENS.READY)
   }, [])
 
   const handleNewItem = useCallback(() => {
-    setCapturedImage(null)
-    setIdentifyResult(null)
-    setConfirmedProduce(null)
+    setCaptured(null)
+    setResult(null)
+    setProduce(null)
     setScreen(SCREENS.READY)
   }, [])
 
-  const currentIdx = STEP_KEYS.indexOf(screen)
+  const currentIdx = STEPS.findIndex(s => s.key === screen)
 
   return (
-    <div className="flex flex-col min-h-screen max-w-sm mx-auto bg-white shadow-xl">
+    <div className="flex flex-col h-screen max-w-sm mx-auto bg-white shadow-xl overflow-hidden">
       <Header />
 
       {/* Step indicator */}
@@ -81,30 +72,15 @@ export default function App() {
         })}
       </div>
 
-      {/* Screens — flex-1 so camera can go fullscreen within the card */}
-      <div className="flex-1 flex flex-col overflow-hidden" style={{ minHeight: 0 }}>
-        {screen === SCREENS.READY && (
-          <ReadyScreen onCapture={handleCapture} />
+      {/* Screen area */}
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        {screen === SCREENS.READY    && <ReadyScreen onCapture={handleCapture} />}
+        {screen === SCREENS.SCANNING && <ScanningScreen capturedImage={captured} />}
+        {screen === SCREENS.RESULT   && result && (
+          <ResultScreen result={result} onConfirm={handleConfirm} onRetry={handleRetry} />
         )}
-        {screen === SCREENS.SCANNING && (
-          <ScanningScreen capturedImage={capturedImage} />
-        )}
-        {screen === SCREENS.RESULT && identifyResult && (
-          <ResultScreen
-            result={identifyResult}
-            onConfirm={handleConfirm}
-            onRetry={handleRetry}
-            onManualPick={handleManualPick}
-          />
-        )}
-        {screen === SCREENS.MANUAL && (
-          <ManualPickScreen
-            onSelect={handleConfirm}
-            onRetry={handleRetry}
-          />
-        )}
-        {screen === SCREENS.LABEL && confirmedProduce && (
-          <LabelScreen produce={confirmedProduce} onNewItem={handleNewItem} />
+        {screen === SCREENS.LABEL    && produce && (
+          <LabelScreen produce={produce} onNewItem={handleNewItem} />
         )}
       </div>
     </div>

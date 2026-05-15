@@ -3,9 +3,9 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 const COUNTDOWN = 3
 
 export default function ReadyScreen({ onCapture }) {
-  const videoRef = useRef(null)
-  const streamRef = useRef(null)
-  const timerRef = useRef(null)
+  const videoRef   = useRef(null)
+  const streamRef  = useRef(null)
+  const timerRef   = useRef(null)
   const [cameraError, setCameraError] = useState(null)
   const [cameraReady, setCameraReady] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(COUNTDOWN)
@@ -14,7 +14,7 @@ export default function ReadyScreen({ onCapture }) {
     if (!videoRef.current) return
     const video = videoRef.current
     const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth || 640
+    canvas.width  = video.videoWidth  || 640
     canvas.height = video.videoHeight || 480
     canvas.getContext('2d').drawImage(video, 0, 0)
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92)
@@ -59,32 +59,27 @@ export default function ReadyScreen({ onCapture }) {
     }
   }, [])
 
-  const radius = 54
+  const radius       = 54
   const circumference = 2 * Math.PI * radius
-  const dashOffset = circumference - (secondsLeft / COUNTDOWN) * circumference
+  const dashOffset   = circumference - (secondsLeft / COUNTDOWN) * circumference
 
   return (
     <div className="relative flex-1 bg-black overflow-hidden fade-in">
       {cameraError ? (
-        <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">
+        <div className="flex flex-col items-center justify-center h-full gap-3 p-8 text-center">
           <div className="text-5xl">📷</div>
-          <p className="text-white font-medium">Camera unavailable</p>
+          <p className="text-white font-semibold">Camera unavailable</p>
           <p className="text-gray-400 text-sm">{cameraError}</p>
-          <p className="text-gray-500 text-xs">Allow camera access and reload the page</p>
+          <p className="text-gray-500 text-xs">Allow camera access and reload</p>
         </div>
       ) : (
         <>
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <video ref={videoRef} autoPlay playsInline muted
+            className="absolute inset-0 w-full h-full object-cover" />
 
           {!cameraReady && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-3">
                 <div className="w-8 h-8 border-4 border-keells-green border-t-transparent rounded-full animate-spin" />
                 <span className="text-white text-sm">Starting camera…</span>
               </div>
@@ -93,39 +88,35 @@ export default function ReadyScreen({ onCapture }) {
 
           {cameraReady && (
             <>
-              {/* Pulsing corner brackets instead of ring — feels more like a scanner */}
+              {/* Scanner corner brackets */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="relative w-64 h-64">
-                  {/* corners */}
                   {[
-                    'top-0 left-0 border-t-4 border-l-4 rounded-tl-lg',
-                    'top-0 right-0 border-t-4 border-r-4 rounded-tr-lg',
-                    'bottom-0 left-0 border-b-4 border-l-4 rounded-bl-lg',
-                    'bottom-0 right-0 border-b-4 border-r-4 rounded-br-lg',
+                    'top-0 left-0 border-t-4 border-l-4 rounded-tl-xl',
+                    'top-0 right-0 border-t-4 border-r-4 rounded-tr-xl',
+                    'bottom-0 left-0 border-b-4 border-l-4 rounded-bl-xl',
+                    'bottom-0 right-0 border-b-4 border-r-4 rounded-br-xl',
                   ].map((cls, i) => (
-                    <div key={i} className={`absolute w-8 h-8 border-keells-green ${cls}`} />
+                    <div key={i} className={`absolute w-10 h-10 border-keells-green ${cls}`} />
                   ))}
                 </div>
               </div>
 
-              {/* Bottom overlay with countdown */}
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent pt-16 pb-6 flex flex-col items-center gap-4">
-                <p className="text-white text-sm font-medium tracking-wide">Hold produce under camera</p>
+              {/* Pulsing ring */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="camera-ring w-64 h-64 rounded-full border-2 border-keells-green/40" />
+              </div>
 
+              {/* Bottom overlay */}
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-20 pb-8 flex flex-col items-center gap-4">
+                <p className="text-white text-sm font-medium tracking-wide">Place produce under camera</p>
                 {/* Countdown ring */}
                 <div className="relative w-16 h-16 flex items-center justify-center">
                   <svg className="-rotate-90 absolute inset-0" width="64" height="64" viewBox="0 0 128 128">
-                    <circle cx="64" cy="64" r={radius} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="8" />
-                    <circle
-                      cx="64" cy="64" r={radius}
-                      fill="none"
-                      stroke="#1d6f42"
-                      strokeWidth="8"
-                      strokeLinecap="round"
-                      strokeDasharray={circumference}
-                      strokeDashoffset={dashOffset}
-                      style={{ transition: 'stroke-dashoffset 0.9s linear' }}
-                    />
+                    <circle cx="64" cy="64" r={radius} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="8" />
+                    <circle cx="64" cy="64" r={radius} fill="none" stroke="#1d6f42" strokeWidth="8"
+                      strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={dashOffset}
+                      style={{ transition: 'stroke-dashoffset 0.9s linear' }} />
                   </svg>
                   <span className="text-white text-2xl font-bold relative z-10">{secondsLeft}</span>
                 </div>
