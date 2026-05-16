@@ -57,8 +57,8 @@ export async function runOnnx(session, base64ImageData) {
   const tensorData = await preprocess(base64ImageData)
   const tensor = new ort.Tensor('float32', tensorData, [1, 3, 224, 224])
 
-  const outputs = await session.run({ [session.inputNames[0]]: tensor })
-  const logits  = Array.from(outputs[session.outputNames[0]].data)
+  const outputs = await session.run({ image: tensor })
+  const logits  = Array.from(outputs['logits'].data)
   const probs   = softmax(logits)
   const maxIdx  = probs.indexOf(Math.max(...probs))
   const maxProb = probs[maxIdx]
