@@ -17,7 +17,7 @@ function Barcode({ plu }) {
   )
 }
 
-export default function LabelScreen({ produce, onNewItem }) {
+export default function LabelScreen({ produce, onNewItem, onChangeVariety }) {
   const weight     = useMemo(() => randomWeight(), [])
   const pricePerKg = getPricePerKg(produce.category)
   const total      = calcPrice(weight, pricePerKg)
@@ -79,12 +79,18 @@ export default function LabelScreen({ produce, onNewItem }) {
         </p>
       </div>
 
-      <div className="px-4 pb-8 pt-2">
+      <div className="px-4 pb-8 pt-2 flex flex-col gap-3">
         <button onClick={onNewItem}
           className="w-full bg-keells-green text-white font-bold text-lg rounded-2xl py-5
-                     active:scale-95 transition-transform shadow-lg hover:bg-keells-light">
+                     active:scale-95 transition-transform shadow-lg">
           New Item
         </button>
+        {onChangeVariety && (
+          <button onClick={onChangeVariety}
+            className="w-full text-gray-400 text-sm py-2 active:text-keells-green transition-colors">
+            Wrong variety? Go back
+          </button>
+        )}
       </div>
     </div>
   )

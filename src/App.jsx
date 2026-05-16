@@ -37,6 +37,11 @@ export default function App() {
     setScreen(SCREENS.LABEL)
   }, [])
 
+  const handleChangeVariety = useCallback(() => {
+    setProduce(null)
+    setScreen(SCREENS.RESULT)
+  }, [])
+
   const handleRetry = useCallback(() => {
     setCaptured(null)
     setResult(null)
@@ -80,7 +85,7 @@ export default function App() {
           <ResultScreen result={result} onConfirm={handleConfirm} onRetry={handleRetry} />
         )}
         {screen === SCREENS.LABEL    && produce && (
-          <LabelScreen produce={produce} onNewItem={handleNewItem} />
+          <LabelScreen produce={produce} onNewItem={handleNewItem} onChangeVariety={result?.has_varieties ? handleChangeVariety : undefined} />
         )}
       </div>
     </div>

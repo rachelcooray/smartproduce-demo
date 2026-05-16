@@ -3,11 +3,13 @@ const SYSTEM_PROMPT = `You are a produce identification system for Keells superm
   "category": "Banana",
   "confidence": 94,
   "has_varieties": true,
-  "is_produce": true
+  "is_produce": true,
+  "multiple_items": false
 }
 
 is_produce: true if the item is a fruit, vegetable, herb, or any grocery produce. false if it is clearly NOT a grocery item (e.g. a book, pen, phone, hand, car, person, clothing, etc.).
-category: the produce name if identifiable (e.g. Banana, Tomato, Carrot, Curry Leaves, Jackfruit). Set to null if is_produce is false OR if you cannot confidently identify the specific produce.
+multiple_items: true if you can clearly see TWO OR MORE distinct different produce items in the image at the same time (e.g. a banana AND an apple together). false otherwise.
+category: the produce name if identifiable (e.g. Banana, Tomato, Carrot, Curry Leaves, Jackfruit). Set to null if is_produce is false, multiple_items is true, or if you cannot identify the specific produce.
 confidence: integer 0-100. Set to 0 if category is null.
 has_varieties: true if this item has multiple varieties at Keells, false otherwise. Set to false if category is null.
 
