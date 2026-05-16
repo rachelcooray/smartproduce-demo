@@ -31,6 +31,11 @@ export default function ResultScreen({ result, onConfirm, onRetry }) {
         <div className="text-5xl">🤔</div>
         <p className="text-gray-800 font-bold text-xl text-center">Couldn't identify produce</p>
         <p className="text-gray-400 text-sm text-center">Make sure the item is clearly visible and well-lit.</p>
+        {result.error && (
+          <p className="text-red-400 text-xs text-center font-mono bg-red-50 rounded-lg px-3 py-2 max-w-xs break-words">
+            {result.error}
+          </p>
+        )}
         <button onClick={onRetry}
           className="bg-keells-green text-white font-semibold rounded-2xl py-3 px-10 active:scale-95 transition-transform shadow">
           Try Again
