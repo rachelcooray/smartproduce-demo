@@ -5,7 +5,7 @@ ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/di
 
 export const ONNX_CLASSES = ['apple', 'banana', 'chilli', 'grapes', 'lemon', 'tomato']
 const CLASSES = ONNX_CLASSES
-const CONFIDENCE_THRESHOLD = 0.7
+const CONFIDENCE_THRESHOLD = 0.6
 
 const CLASS_META = {
   apple:  { category: 'Apple',  has_varieties: true  },
@@ -20,7 +20,7 @@ const MEAN = [0.485, 0.456, 0.406]
 const STD  = [0.229, 0.224, 0.225]
 
 export async function loadSession() {
-  return ort.InferenceSession.create('/smartproduce_model.onnx')
+  return ort.InferenceSession.create('/smartproduce_model_single.onnx')
 }
 
 function softmax(logits) {
@@ -57,7 +57,7 @@ export async function runOnnx(session, base64ImageData) {
   const tensorData = await preprocess(base64ImageData)
   const tensor = new ort.Tensor('float32', tensorData, [1, 3, 224, 224])
 
-  const outputs = await session.run({ image: tensor })
+  const outputs = await session.run({ [session.inputNames[0]]: tensor })
   const logits  = Array.from(outputs[session.outputNames[0]].data)
   const probs   = softmax(logits)
   const maxIdx  = probs.indexOf(Math.max(...probs))
