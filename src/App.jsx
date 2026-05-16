@@ -93,12 +93,12 @@ export default function App() {
       {/* Screen area */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {screen === SCREENS.READY    && <ReadyScreen onCapture={handleCapture} />}
-        {screen === SCREENS.SCANNING && <ScanningScreen capturedImage={captured} modelUsed={modelUsed} />}
+        {screen === SCREENS.SCANNING && <ScanningScreen capturedImage={captured} />}
         {screen === SCREENS.RESULT   && result && (
           <ResultScreen result={result} onConfirm={handleConfirm} onRetry={handleRetry} />
         )}
         {screen === SCREENS.LABEL    && produce && (
-          <LabelScreen produce={produce} onNewItem={handleNewItem} onChangeVariety={result?.has_varieties ? handleChangeVariety : undefined} />
+          <LabelScreen produce={produce} onNewItem={handleNewItem} onChangeVariety={result?.has_varieties ? handleChangeVariety : undefined} modelUsed={modelUsed} />
         )}
       </div>
     </div>

@@ -17,7 +17,7 @@ function Barcode({ plu }) {
   )
 }
 
-export default function LabelScreen({ produce, onNewItem, onChangeVariety }) {
+export default function LabelScreen({ produce, onNewItem, onChangeVariety, modelUsed }) {
   const weight     = useMemo(() => randomWeight(), [])
   const pricePerKg = getPricePerKg(produce.category)
   const total      = calcPrice(weight, pricePerKg)
@@ -74,9 +74,21 @@ export default function LabelScreen({ produce, onNewItem, onChangeVariety }) {
           </div>
         </div>
 
-        <p className="text-xs text-gray-400 text-center max-w-xs leading-relaxed">
-          In production this label prints via a thermal printer at the scale terminal.
-        </p>
+        <div className="flex flex-col items-center gap-1">
+          {modelUsed && (
+            <div className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full ${
+              modelUsed === 'onnx'
+                ? 'bg-green-50 text-keells-green'
+                : 'bg-gray-100 text-gray-500'
+            }`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${modelUsed === 'onnx' ? 'bg-keells-green' : 'bg-gray-400'}`} />
+              {modelUsed === 'onnx' ? 'Identified by ONNX Model' : 'Identified by Claude Vision'}
+            </div>
+          )}
+          <p className="text-xs text-gray-400 text-center max-w-xs leading-relaxed">
+            In production this label prints via a thermal printer at the scale terminal.
+          </p>
+        </div>
       </div>
 
       <div className="px-4 pb-8 pt-2 flex flex-col gap-3">

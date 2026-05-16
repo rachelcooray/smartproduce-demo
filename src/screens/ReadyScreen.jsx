@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 
-const COUNTDOWN = 3
+const COUNTDOWN = 1
 
 export default function ReadyScreen({ onCapture }) {
   const videoRef   = useRef(null)
