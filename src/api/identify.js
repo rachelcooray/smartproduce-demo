@@ -1,6 +1,6 @@
 import { runOnnx } from './onnxInfer'
 
-const USE_ANTHROPIC_FALLBACK = true
+const USE_ANTHROPIC_FALLBACK = false
 
 // Returns { result, model } where model is 'onnx' or 'claude'
 export async function identifyProduce(base64ImageData, onnxSession) {
