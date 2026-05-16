@@ -16,10 +16,11 @@ const STEPS   = [
 ]
 
 export default function App() {
-  const [screen,   setScreen]   = useState(SCREENS.READY)
-  const [captured, setCaptured] = useState(null)
-  const [result,   setResult]   = useState(null)
-  const [produce,  setProduce]  = useState(null)
+  const [screen,     setScreen]     = useState(SCREENS.READY)
+  const [captured,   setCaptured]   = useState(null)
+  const [result,     setResult]     = useState(null)
+  const [produce,    setProduce]    = useState(null)
+  const [modelUsed,  setModelUsed]  = useState(null)
   const onnxSession = useRef(null)
 
   useEffect(() => {
@@ -32,10 +33,12 @@ export default function App() {
     setCaptured(dataUrl)
     setScreen(SCREENS.SCANNING)
     try {
-      const res = await identifyProduce(base64, onnxSession.current)
+      const { result: res, model } = await identifyProduce(base64, onnxSession.current)
       setResult(res)
+      setModelUsed(model)
     } catch (err) {
       setResult({ category: null, confidence: 0, has_varieties: false, error: err.message })
+      setModelUsed(null)
     }
     setScreen(SCREENS.RESULT)
   }, [])
@@ -53,6 +56,7 @@ export default function App() {
   const handleRetry = useCallback(() => {
     setCaptured(null)
     setResult(null)
+    setModelUsed(null)
     setScreen(SCREENS.READY)
   }, [])
 
@@ -60,6 +64,7 @@ export default function App() {
     setCaptured(null)
     setResult(null)
     setProduce(null)
+    setModelUsed(null)
     setScreen(SCREENS.READY)
   }, [])
 
@@ -88,7 +93,7 @@ export default function App() {
       {/* Screen area */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {screen === SCREENS.READY    && <ReadyScreen onCapture={handleCapture} />}
-        {screen === SCREENS.SCANNING && <ScanningScreen capturedImage={captured} />}
+        {screen === SCREENS.SCANNING && <ScanningScreen capturedImage={captured} modelUsed={modelUsed} />}
         {screen === SCREENS.RESULT   && result && (
           <ResultScreen result={result} onConfirm={handleConfirm} onRetry={handleRetry} />
         )}

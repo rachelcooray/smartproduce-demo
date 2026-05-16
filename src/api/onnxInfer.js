@@ -3,7 +3,8 @@ import * as ort from 'onnxruntime-web'
 // Point WASM binaries at the ort dist folder served from node_modules
 ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/'
 
-const CLASSES = ['apple', 'banana', 'chilli', 'grapes', 'lemon', 'tomato']
+export const ONNX_CLASSES = ['apple', 'banana', 'chilli', 'grapes', 'lemon', 'tomato']
+const CLASSES = ONNX_CLASSES
 const CONFIDENCE_THRESHOLD = 0.7
 
 const CLASS_META = {
@@ -62,13 +63,12 @@ export async function runOnnx(session, base64ImageData) {
   const maxIdx  = probs.indexOf(Math.max(...probs))
   const maxProb = probs[maxIdx]
 
-  if (maxProb < CONFIDENCE_THRESHOLD) return null
-
   const meta = CLASS_META[CLASSES[maxIdx]]
   return {
     ...meta,
-    confidence:     Math.round(maxProb * 100),
-    is_produce:     true,
-    multiple_items: false,
+    confidence:        Math.round(maxProb * 100),
+    is_produce:        true,
+    multiple_items:    false,
+    aboveThreshold:    maxProb >= CONFIDENCE_THRESHOLD,
   }
 }

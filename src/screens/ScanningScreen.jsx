@@ -1,4 +1,10 @@
-export default function ScanningScreen({ capturedImage }) {
+export default function ScanningScreen({ capturedImage, modelUsed }) {
+  const modelLabel = modelUsed === 'onnx'
+    ? { text: 'ONNX Model', color: 'text-keells-green' }
+    : modelUsed === 'claude'
+    ? { text: 'Claude Vision', color: 'text-gray-400' }
+    : null
+
   return (
     <div className="flex-1 flex flex-col fade-in">
       {/* Frozen frame with scan line */}
@@ -16,7 +22,11 @@ export default function ScanningScreen({ capturedImage }) {
           <div className="w-4 h-4 border-2 border-keells-green border-t-transparent rounded-full animate-spin" />
           <span className="text-gray-700 font-semibold">Identifying produce…</span>
         </div>
-        <p className="text-gray-400 text-xs">Powered by Claude Vision AI</p>
+        {modelLabel ? (
+          <p className={`text-xs font-medium ${modelLabel.color}`}>{modelLabel.text}</p>
+        ) : (
+          <p className="text-gray-400 text-xs">Analysing image…</p>
+        )}
       </div>
     </div>
   )

@@ -49,6 +49,26 @@ export default function ResultScreen({ result, onConfirm, onRetry }) {
     return () => clearTimeout(t)
   }, [result, varieties, lowConfidence]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Item not in the 6-class ONNX model (fallback disabled)
+  if (result.not_in_model) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8 bg-white fade-in">
+        <div className="text-5xl">🔍</div>
+        <p className="text-gray-800 font-bold text-xl text-center">Not recognised</p>
+        <p className="text-gray-500 text-sm text-center leading-relaxed">
+          Point camera at:{' '}
+          <span className="text-keells-green font-semibold">
+            apple, banana, chilli, grapes, lemon, or tomato
+          </span>
+        </p>
+        <button onClick={onRetry}
+          className="bg-keells-green text-white font-semibold rounded-2xl py-3 px-10 active:scale-95 transition-transform shadow">
+          Try Again
+        </button>
+      </div>
+    )
+  }
+
   // Multiple items detected
   if (result.multiple_items) {
     return (
