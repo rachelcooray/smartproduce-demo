@@ -34,7 +34,7 @@ export default function ReadyScreen({ onCapture, onnxReady }) {
       }
     }, 1000)
     return () => clearInterval(timerRef.current)
-  }, [cameraReady, capture])
+  }, [cameraReady, onnxReady, capture])
 
   useEffect(() => {
     async function startCamera() {
