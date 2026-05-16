@@ -2,6 +2,7 @@ import * as ort from 'onnxruntime-web'
 
 // Point WASM binaries at the ort dist folder served from node_modules
 ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.26.0/dist/'
+ort.env.wasm.numThreads = 1
 
 export const ONNX_CLASSES = ['apple', 'banana', 'chilli', 'grapes', 'lemon', 'tomato']
 const CLASSES = ONNX_CLASSES
