@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import Header from './components/Header'
 import ReadyScreen from './screens/ReadyScreen'
 import ScanningScreen from './screens/ScanningScreen'
 import ResultScreen from './screens/ResultScreen'
 import LabelScreen from './screens/LabelScreen'
 import { identifyProduce } from './api/identify'
+import { loadSession } from './api/onnxInfer'
 
 const SCREENS = { READY: 'ready', SCANNING: 'scanning', RESULT: 'result', LABEL: 'label' }
 const STEPS   = [
@@ -19,12 +20,19 @@ export default function App() {
   const [captured, setCaptured] = useState(null)
   const [result,   setResult]   = useState(null)
   const [produce,  setProduce]  = useState(null)
+  const onnxSession = useRef(null)
+
+  useEffect(() => {
+    loadSession()
+      .then(s  => { onnxSession.current = s })
+      .catch(e => console.warn('ONNX session failed to load:', e))
+  }, [])
 
   const handleCapture = useCallback(async ({ dataUrl, base64 }) => {
     setCaptured(dataUrl)
     setScreen(SCREENS.SCANNING)
     try {
-      const res = await identifyProduce(base64)
+      const res = await identifyProduce(base64, onnxSession.current)
       setResult(res)
     } catch (err) {
       setResult({ category: null, confidence: 0, has_varieties: false, error: err.message })
