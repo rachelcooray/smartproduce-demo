@@ -1,3 +1,14 @@
+export const ALL_PRODUCE = [
+  'Apple', 'Ash Plantain', 'Avocado', 'Banana', 'Beans', 'Bell Pepper',
+  'Bitter Gourd', 'Brinjal', 'Broccoli', 'Cabbage', 'Capsicum', 'Carrot',
+  'Cauliflower', 'Cucumber', 'Curry Leaves', 'Dragon Fruit', 'Garlic',
+  'Ginger', 'Grape', 'Guava', 'Jackfruit', 'Kiwi', 'Leek', 'Lemon',
+  'Lettuce', 'Lime', 'Mango', 'Mandarin', 'Melon', 'Mushroom', 'Okra',
+  'Onion', 'Orange', 'Papaya', 'Passion Fruit', 'Pear', 'Pineapple',
+  'Pomegranate', 'Potato', 'Pumpkin', 'Rambutan', 'Spinach', 'Sweet Potato',
+  'Tomato', 'Watermelon',
+]
+
 export const VARIETY_MAP = {
   'apple':       ['Fuji', 'Green', 'Red', 'Red Royal Gala', 'Yellow'],
   'banana':      ['Kolikuttu', 'Ambul', 'Ambun', 'Cavendish', 'CIC Quality', 'Seeni'],

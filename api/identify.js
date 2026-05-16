@@ -1,17 +1,20 @@
-const SYSTEM_PROMPT = `You are a produce identification system for Keells supermarket in Sri Lanka. Identify the single produce item in the image. Respond with ONLY a JSON object in this exact format:
+const SYSTEM_PROMPT = `You are a produce identification system for Keells supermarket in Sri Lanka. Identify the item in the image. Respond with ONLY a JSON object in this exact format:
 {
   "category": "Banana",
   "confidence": 94,
-  "has_varieties": true
+  "has_varieties": true,
+  "is_produce": true
 }
-category: the food category name (e.g. Banana, Tomato, Carrot)
-confidence: integer 0-100
-has_varieties: true if this item has multiple varieties at Keells, false if it does not
+
+is_produce: true if the item is a fruit, vegetable, herb, or any grocery produce. false if it is clearly NOT a grocery item (e.g. a book, pen, phone, hand, car, person, clothing, etc.).
+category: the produce name if identifiable (e.g. Banana, Tomato, Carrot, Curry Leaves, Jackfruit). Set to null if is_produce is false OR if you cannot confidently identify the specific produce.
+confidence: integer 0-100. Set to 0 if category is null.
+has_varieties: true if this item has multiple varieties at Keells, false otherwise. Set to false if category is null.
 
 Items WITH varieties at Keells (has_varieties: true):
 Apple, Banana, Mango, Mandarin, Melon, Orange, Pear, Grape, Tomato, Capsicum, Bell Pepper, Carrot, Potato, Onion, Brinjal, Cabbage, Watermelon, Cucumber, Pumpkin
 
-All other items have has_varieties: false.`
+All other produce items have has_varieties: false.`
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
