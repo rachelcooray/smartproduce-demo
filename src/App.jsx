@@ -16,17 +16,18 @@ const STEPS   = [
 ]
 
 export default function App() {
-  const [screen,     setScreen]     = useState(SCREENS.READY)
-  const [captured,   setCaptured]   = useState(null)
-  const [result,     setResult]     = useState(null)
-  const [produce,    setProduce]    = useState(null)
-  const [modelUsed,  setModelUsed]  = useState(null)
+  const [screen,       setScreen]       = useState(SCREENS.READY)
+  const [captured,     setCaptured]     = useState(null)
+  const [result,       setResult]       = useState(null)
+  const [produce,      setProduce]      = useState(null)
+  const [modelUsed,    setModelUsed]    = useState(null)
+  const [onnxReady,    setOnnxReady]    = useState(false)
   const onnxSession = useRef(null)
 
   useEffect(() => {
     loadSession()
-      .then(s  => { onnxSession.current = s })
-      .catch(e => console.warn('ONNX session failed to load:', e))
+      .then(s  => { onnxSession.current = s; setOnnxReady(true) })
+      .catch(e => { console.warn('ONNX session failed to load:', e); setOnnxReady(true) })
   }, [])
 
   const handleCapture = useCallback(async ({ dataUrl, base64 }) => {
@@ -92,7 +93,7 @@ export default function App() {
 
       {/* Screen area */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-        {screen === SCREENS.READY    && <ReadyScreen onCapture={handleCapture} />}
+        {screen === SCREENS.READY    && <ReadyScreen onCapture={handleCapture} onnxReady={onnxReady} />}
         {screen === SCREENS.SCANNING && <ScanningScreen capturedImage={captured} />}
         {screen === SCREENS.RESULT   && result && (
           <ResultScreen result={result} onConfirm={handleConfirm} onRetry={handleRetry} />

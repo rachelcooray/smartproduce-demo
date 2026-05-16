@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 
 const COUNTDOWN = 1
 
-export default function ReadyScreen({ onCapture }) {
+export default function ReadyScreen({ onCapture, onnxReady }) {
   const videoRef   = useRef(null)
   const streamRef  = useRef(null)
   const timerRef   = useRef(null)
@@ -22,7 +22,7 @@ export default function ReadyScreen({ onCapture }) {
   }, [onCapture])
 
   useEffect(() => {
-    if (!cameraReady) return
+    if (!cameraReady || !onnxReady) return
     setSecondsLeft(COUNTDOWN)
     let count = COUNTDOWN
     timerRef.current = setInterval(() => {
@@ -109,7 +109,9 @@ export default function ReadyScreen({ onCapture }) {
 
               {/* Bottom overlay */}
               <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-20 pb-8 flex flex-col items-center gap-4">
-                <p className="text-white text-sm font-medium tracking-wide">Place produce under camera</p>
+                <p className="text-white text-sm font-medium tracking-wide">
+                  {onnxReady ? 'Place produce under camera' : 'Loading model…'}
+                </p>
                 {/* Countdown ring */}
                 <div className="relative w-16 h-16 flex items-center justify-center">
                   <svg className="-rotate-90 absolute inset-0" width="64" height="64" viewBox="0 0 128 128">
@@ -118,7 +120,10 @@ export default function ReadyScreen({ onCapture }) {
                       strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={dashOffset}
                       style={{ transition: 'stroke-dashoffset 0.9s linear' }} />
                   </svg>
-                  <span className="text-white text-2xl font-bold relative z-10">{secondsLeft}</span>
+                  {onnxReady
+                    ? <span className="text-white text-2xl font-bold relative z-10">{secondsLeft}</span>
+                    : <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10" />
+                  }
                 </div>
               </div>
             </>
