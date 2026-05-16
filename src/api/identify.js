@@ -1,33 +1,35 @@
-import { runOnnx, ONNX_CLASSES } from './onnxInfer'
+import { runOnnx } from './onnxInfer'
 
 const USE_ANTHROPIC_FALLBACK = false
 
 // Returns { result, model } where model is 'onnx' or 'claude'
 export async function identifyProduce(base64ImageData, onnxSession) {
-  // --- ONNX path ---
+  // --- ONNX-only mode ---
+  if (!USE_ANTHROPIC_FALLBACK) {
+    if (!onnxSession) {
+      return {
+        result: { category: null, confidence: 0, has_varieties: false, not_in_model: true },
+        model: 'onnx',
+      }
+    }
+    const onnxResult = await runOnnx(onnxSession, base64ImageData)
+    if (onnxResult) return { result: onnxResult, model: 'onnx' }
+    return {
+      result: { category: null, confidence: 0, has_varieties: false, not_in_model: true },
+      model: 'onnx',
+    }
+  }
+
+  // --- ONNX + Claude fallback mode ---
   if (onnxSession) {
     try {
       const onnxResult = await runOnnx(onnxSession, base64ImageData)
-
-      if (!USE_ANTHROPIC_FALLBACK) {
-        // Always use ONNX result regardless of confidence
-        if (onnxResult) return { result: onnxResult, model: 'onnx' }
-        // Item not in the 6 classes → not recognised state
-        return {
-          result: { category: null, confidence: 0, has_varieties: false, not_in_model: true },
-          model: 'onnx',
-        }
-      }
-
-      // USE_ANTHROPIC_FALLBACK = true: only use ONNX when confidence ≥ 0.7
       if (onnxResult?.aboveThreshold) return { result: onnxResult, model: 'onnx' }
-      // else fall through to Claude
     } catch (err) {
       console.warn('ONNX inference failed, falling back to Claude:', err)
     }
   }
 
-  // --- Claude Vision fallback ---
   const response = await fetch('/api/identify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
