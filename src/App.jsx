@@ -25,9 +25,12 @@ export default function App() {
   const onnxSession = useRef(null)
 
   useEffect(() => {
+    // Force-unblock the UI after 12s even if model is still downloading
+    const timeout = setTimeout(() => setOnnxReady(true), 12000)
     loadSession()
       .then(s  => { onnxSession.current = s; setOnnxReady(true) })
       .catch(e => { console.warn('ONNX session failed to load:', e); setOnnxReady(true) })
+      .finally(() => clearTimeout(timeout))
   }, [])
 
   const handleCapture = useCallback(async ({ dataUrl, base64 }) => {
