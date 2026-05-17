@@ -4,6 +4,7 @@ import ReadyScreen from './screens/ReadyScreen'
 import ScanningScreen from './screens/ScanningScreen'
 import ResultScreen from './screens/ResultScreen'
 import LabelScreen from './screens/LabelScreen'
+import DebugLog from './components/DebugLog'
 import { identifyProduce } from './api/identify'
 import { loadSession } from './api/onnxInfer'
 
@@ -22,6 +23,7 @@ export default function App() {
   const [produce,      setProduce]      = useState(null)
   const [modelUsed,    setModelUsed]    = useState(null)
   const [onnxReady,    setOnnxReady]    = useState(false)
+  const [scanLog,      setScanLog]      = useState([])
   const onnxSession = useRef(null)
 
   useEffect(() => {
@@ -40,6 +42,13 @@ export default function App() {
       const { result: res, model } = await identifyProduce(base64, onnxSession.current)
       setResult(res)
       setModelUsed(model)
+      setScanLog(prev => [{
+        time: new Date().toLocaleTimeString(),
+        model,
+        top: res.topPredictions ?? [],
+        category: res.category,
+        confidence: res.confidence,
+      }, ...prev].slice(0, 20))
     } catch (err) {
       setResult({ category: null, confidence: 0, has_varieties: false, error: err.message })
       setModelUsed(null)
@@ -93,6 +102,8 @@ export default function App() {
           )
         })}
       </div>
+
+      <DebugLog entries={scanLog} onClear={() => setScanLog([])} />
 
       {/* Screen area */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0">

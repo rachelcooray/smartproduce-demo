@@ -103,11 +103,18 @@ export async function runOnnx(session, base64ImageData) {
   const maxProb = probs[maxIdx]
 
   const meta = CLASS_META[CLASSES[maxIdx]]
+
+  // Top-5 predictions for debug logging
+  const indexed = probs.map((p, i) => ({ label: CLASSES[i], pct: Math.round(p * 100) }))
+  indexed.sort((a, b) => b.pct - a.pct)
+  const topPredictions = indexed.slice(0, 5)
+
   return {
     ...meta,
     confidence:     Math.round(maxProb * 100),
     is_produce:     true,
     multiple_items: false,
     aboveThreshold: maxProb >= CONFIDENCE_THRESHOLD,
+    topPredictions,
   }
 }

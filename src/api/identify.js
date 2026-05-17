@@ -8,14 +8,14 @@ export async function identifyProduce(base64ImageData, onnxSession) {
   if (!USE_ANTHROPIC_FALLBACK) {
     if (!onnxSession) {
       return {
-        result: { category: null, confidence: 0, has_varieties: false, not_in_model: true },
+        result: { category: null, confidence: 0, has_varieties: false, not_in_model: true, topPredictions: [] },
         model: 'onnx',
       }
     }
     const onnxResult = await runOnnx(onnxSession, base64ImageData)
     if (onnxResult) return { result: onnxResult, model: 'onnx' }
     return {
-      result: { category: null, confidence: 0, has_varieties: false, not_in_model: true },
+      result: { category: null, confidence: 0, has_varieties: false, not_in_model: true, topPredictions: [] },
       model: 'onnx',
     }
   }
