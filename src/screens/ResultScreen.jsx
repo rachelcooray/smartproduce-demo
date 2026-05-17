@@ -1,8 +1,6 @@
 import { useEffect } from 'react'
 import { getVarieties, ALL_PRODUCE } from '../data/produce'
 
-const CONFIDENCE_THRESHOLD = 70
-
 function BackButton({ onRetry }) {
   return (
     <button onClick={onRetry}
@@ -40,14 +38,13 @@ function ManualList({ onConfirm, hint }) {
 export default function ResultScreen({ result, onConfirm, onRetry }) {
   const varieties  = getVarieties(result.category, result.has_varieties)
   const confidence = result.confidence ?? 0
-  const lowConfidence = result.category && confidence < CONFIDENCE_THRESHOLD
 
   // Auto-advance when identified with no variety selection needed
   useEffect(() => {
-    if (!result.category || lowConfidence || varieties) return
+    if (!result.category || varieties) return
     const t = setTimeout(() => onConfirm({ category: result.category, variety: null }), 1500)
     return () => clearTimeout(t)
-  }, [result, varieties, lowConfidence]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [result, varieties]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Item not in the 6-class ONNX model (fallback disabled)
   if (result.not_in_model) {
@@ -56,10 +53,7 @@ export default function ResultScreen({ result, onConfirm, onRetry }) {
         <div className="text-5xl">🔍</div>
         <p className="text-gray-800 font-bold text-xl text-center">Not recognised</p>
         <p className="text-gray-500 text-sm text-center leading-relaxed">
-          Point camera at:{' '}
-          <span className="text-keells-green font-semibold">
-            apple, banana, chilli, grapes, lemon, or tomato
-          </span>
+          The model could not load. Please retake.
         </p>
         <button onClick={onRetry}
           className="bg-keells-green text-white font-semibold rounded-2xl py-3 px-10 active:scale-95 transition-transform shadow">
@@ -99,12 +93,8 @@ export default function ResultScreen({ result, onConfirm, onRetry }) {
     )
   }
 
-  // Low confidence or unidentifiable produce → manual fallback list
-  if (!result.category || lowConfidence) {
-    const hint = lowConfidence
-      ? `Looks like ${result.category} (${confidence}% confidence) — please confirm below.`
-      : null
-
+  // No category at all → manual fallback list
+  if (!result.category) {
     return (
       <div className="flex-1 flex flex-col bg-white fade-in overflow-y-auto">
         <BackButton onRetry={onRetry} />
@@ -117,7 +107,7 @@ export default function ResultScreen({ result, onConfirm, onRetry }) {
             </p>
           )}
         </div>
-        <ManualList onConfirm={onConfirm} hint={hint} />
+        <ManualList onConfirm={onConfirm} hint={null} />
       </div>
     )
   }
