@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { getVarieties, ALL_PRODUCE } from '../data/produce'
 
-const CONFIDENCE_THRESHOLD = 28
+const CONFIDENCE_THRESHOLD = 45
 
 function BackButton({ onRetry }) {
   return (
