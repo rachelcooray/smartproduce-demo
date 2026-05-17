@@ -102,7 +102,7 @@ export default function App() {
           <ResultScreen result={result} onConfirm={handleConfirm} onRetry={handleRetry} />
         )}
         {screen === SCREENS.LABEL    && produce && (
-          <LabelScreen produce={produce} onNewItem={handleNewItem} onChangeVariety={result?.has_varieties ? handleChangeVariety : undefined} modelUsed={modelUsed} />
+          <LabelScreen produce={produce} onNewItem={handleNewItem} onChangeVariety={result?.has_varieties ? handleChangeVariety : undefined} modelUsed={modelUsed} confidence={result?.confidence} />
         )}
       </div>
     </div>

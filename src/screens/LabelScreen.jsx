@@ -17,7 +17,7 @@ function Barcode({ plu }) {
   )
 }
 
-export default function LabelScreen({ produce, onNewItem, onChangeVariety, modelUsed }) {
+export default function LabelScreen({ produce, onNewItem, onChangeVariety, modelUsed, confidence }) {
   const weight     = useMemo(() => randomWeight(), [])
   const pricePerKg = getPricePerKg(produce.category)
   const total      = calcPrice(weight, pricePerKg)
@@ -82,7 +82,9 @@ export default function LabelScreen({ produce, onNewItem, onChangeVariety, model
                 : 'bg-gray-100 text-gray-500'
             }`}>
               <div className={`w-1.5 h-1.5 rounded-full ${modelUsed === 'onnx' ? 'bg-keells-green' : 'bg-gray-400'}`} />
-              {modelUsed === 'onnx' ? 'Identified by ONNX Model' : 'Identified by Claude Vision'}
+              {modelUsed === 'onnx'
+                ? `ONNX · ${produce.category} · ${confidence}%`
+                : 'Claude Vision'}
             </div>
           )}
           <p className="text-xs text-gray-400 text-center max-w-xs leading-relaxed">
