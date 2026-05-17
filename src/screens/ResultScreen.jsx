@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { getVarieties, ALL_PRODUCE } from '../data/produce'
 
+const CONFIDENCE_THRESHOLD = 28
+
 function BackButton({ onRetry }) {
   return (
     <button onClick={onRetry}
@@ -36,15 +38,16 @@ function ManualList({ onConfirm, hint }) {
 }
 
 export default function ResultScreen({ result, onConfirm, onRetry }) {
-  const varieties  = getVarieties(result.category, result.has_varieties)
-  const confidence = result.confidence ?? 0
+  const varieties     = getVarieties(result.category, result.has_varieties)
+  const confidence    = result.confidence ?? 0
+  const lowConfidence = result.category && confidence < CONFIDENCE_THRESHOLD
 
   // Auto-advance when identified with no variety selection needed
   useEffect(() => {
-    if (!result.category || varieties) return
+    if (!result.category || lowConfidence || varieties) return
     const t = setTimeout(() => onConfirm({ category: result.category, variety: null }), 1500)
     return () => clearTimeout(t)
-  }, [result, varieties]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [result, varieties, lowConfidence]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Item not in the 6-class ONNX model (fallback disabled)
   if (result.not_in_model) {
@@ -93,8 +96,8 @@ export default function ResultScreen({ result, onConfirm, onRetry }) {
     )
   }
 
-  // No category at all → manual fallback list
-  if (!result.category) {
+  // Low confidence or no category → manual fallback list
+  if (!result.category || lowConfidence) {
     return (
       <div className="flex-1 flex flex-col bg-white fade-in overflow-y-auto">
         <BackButton onRetry={onRetry} />
